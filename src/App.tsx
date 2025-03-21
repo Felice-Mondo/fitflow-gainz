@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
+import AppSidebar from "./components/AppSidebar";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
@@ -22,7 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Header />
-        <main className="pt-16"> {/* Add padding to account for fixed header */}
+        <AppSidebar />
+        <main className="pt-16 md:pl-[var(--sidebar-width)] transition-all duration-300 ease-in-out group-data-[state=collapsed]:md:pl-[var(--sidebar-width-icon)]"> 
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />

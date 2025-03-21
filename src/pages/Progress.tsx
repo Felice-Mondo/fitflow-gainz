@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Calendar, Award, TrendingUp, ListFilter, Calendar as CalendarIcon, ArrowRight, ChevronDown } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer } from '@/components/ui/chart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -138,7 +137,6 @@ const Progress = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Summary Stats */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Total Workouts</CardTitle>
@@ -188,7 +186,6 @@ const Progress = () => {
         </Card>
       </div>
       
-      {/* Charts */}
       <div className="space-y-6">
         <Tabs defaultValue="activity">
           <TabsList className="grid w-full max-w-md grid-cols-3">
@@ -214,8 +211,11 @@ const Progress = () => {
                     }}
                   >
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={timeRange === 'week' ? weeklyWorkouts : monthlyWorkouts}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                      <BarChart 
+                        data={timeRange === 'week' ? weeklyWorkouts : monthlyWorkouts}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis 
                           dataKey="name"
                           tickLine={false}
@@ -225,37 +225,29 @@ const Progress = () => {
                           tickLine={false} 
                           axisLine={true}
                           allowDecimals={false}
+                          domain={[0, 'dataMax + 1']}
                         />
                         <Tooltip 
-                          content={({ active, payload }) => {
-                            if (active && payload && payload.length) {
-                              return (
-                                <div className="rounded-lg border bg-background p-2 shadow-sm">
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        {timeRange === 'week' ? 'Day' : 'Week'}
-                                      </span>
-                                      <span className="font-bold text-muted-foreground">
-                                        {payload[0].payload.name}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-[0.70rem] uppercase text-muted-foreground">
-                                        Workouts
-                                      </span>
-                                      <span className="font-bold">
-                                        {payload[0].value}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          }}
+                          formatter={(value) => [`${value} workouts`, 'Workouts']}
+                          labelFormatter={(label) => `${label}`}
                         />
-                        <Bar dataKey="workouts" radius={[4, 4, 0, 0]} className="fill-primary" />
+                        <Legend />
+                        <ReferenceLine y={0} stroke="#000" />
+                        <Bar 
+                          dataKey="workouts" 
+                          fill="hsl(var(--primary))" 
+                          radius={[4, 4, 0, 0]} 
+                          className="fill-primary"
+                          animationDuration={1500}
+                          name="Workouts"
+                        >
+                          {(timeRange === 'week' ? weeklyWorkouts : monthlyWorkouts).map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              className={entry.workouts > 0 ? "fill-primary" : "fill-primary/30"} 
+                            />
+                          ))}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </ChartContainer>
@@ -281,18 +273,24 @@ const Progress = () => {
                     }}
                   >
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={weightData}>
+                      <LineChart 
+                        data={weightData}
+                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
                         <YAxis domain={['dataMin - 2', 'dataMax + 2']} />
-                        <Tooltip />
+                        <Tooltip formatter={(value) => [`${value} kg`, 'Weight']} />
+                        <Legend />
                         <Line 
+                          name="Weight (kg)"
                           type="monotone" 
                           dataKey="weight" 
                           stroke="hsl(var(--primary))" 
                           strokeWidth={2}
-                          dot={{ r: 4 }}
-                          activeDot={{ r: 6 }}
+                          dot={{ r: 4, strokeWidth: 2, fill: "white" }}
+                          activeDot={{ r: 6, stroke: "hsl(var(--primary))", fill: "white", strokeWidth: 2 }}
+                          animationDuration={1500}
                         />
                       </LineChart>
                     </ResponsiveContainer>
@@ -321,26 +319,29 @@ const Progress = () => {
                           outerRadius={80}
                           fill="#8884d8"
                           dataKey="value"
+                          animationDuration={1500}
+                          nameKey="name"
                         >
                           {workoutTypeData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip formatter={(value) => [`${value}%`, 'Percentage']} />
+                        <Legend 
+                          layout="vertical" 
+                          verticalAlign="middle" 
+                          align="right"
+                          payload={
+                            workoutTypeData.map((item, index) => ({
+                              id: item.name,
+                              type: 'square',
+                              value: `${item.name} (${item.value}%)`,
+                              color: COLORS[index % COLORS.length]
+                            }))
+                          }
+                        />
                       </PieChart>
                     </ResponsiveContainer>
-                    
-                    <div className="flex flex-col gap-2 ml-8">
-                      {workoutTypeData.map((entry, index) => (
-                        <div key={`legend-${index}`} className="flex items-center">
-                          <div 
-                            className="w-3 h-3 mr-2 rounded-sm" 
-                            style={{ backgroundColor: COLORS[index % COLORS.length] }} 
-                          />
-                          <span className="text-sm">{entry.name}: {entry.value}%</span>
-                        </div>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -348,7 +349,6 @@ const Progress = () => {
           </TabsContent>
         </Tabs>
         
-        {/* Achievements */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="lg:col-span-2">
             <CardHeader>

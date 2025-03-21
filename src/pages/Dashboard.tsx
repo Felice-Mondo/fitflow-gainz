@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, ChevronRight, Dumbbell, Clock, BarChart2, Award, Plus, Flame } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, CartesianGrid } from 'recharts';
 
 // Mock data for demonstration
 const activityData = [
@@ -140,17 +139,19 @@ const Dashboard = () => {
                   }}
                 >
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={activityData}>
+                    <BarChart data={activityData} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis 
                         dataKey="day"
                         tickLine={false}
-                        axisLine={false}
-                        padding={{ left: 20, right: 20 }}
+                        axisLine={true}
+                        padding={{ left: 10, right: 10 }}
                       />
                       <YAxis 
                         tickLine={false} 
-                        axisLine={false}
-                        tickFormatter={(value) => `${value}`}
+                        axisLine={true}
+                        allowDecimals={false}
+                        domain={[0, 'dataMax + 1']}
                       />
                       <Tooltip
                         content={({ active, payload }) => {
@@ -185,7 +186,15 @@ const Dashboard = () => {
                         dataKey="workouts"
                         radius={[4, 4, 0, 0]}
                         className="fill-primary"
-                      />
+                        animationDuration={1500}
+                      >
+                        {activityData.map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            className={entry.workouts > 0 ? "fill-primary" : "fill-primary/30"} 
+                          />
+                        ))}
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </ChartContainer>
