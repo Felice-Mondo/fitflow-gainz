@@ -8,6 +8,10 @@ import Header from "./components/Header";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Onboarding from "./pages/Onboarding";
+import Dashboard from "./pages/Dashboard";
+import WorkoutCustomization from "./pages/WorkoutCustomization";
+import WorkoutExecution from "./pages/WorkoutExecution";
+import Progress from "./pages/Progress";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +26,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/workout-customization" element={<WorkoutCustomization />} />
+            <Route path="/workout/:id" element={<WorkoutExecution />} />
+            <Route path="/progress" element={<Progress />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

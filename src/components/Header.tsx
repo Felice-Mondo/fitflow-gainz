@@ -1,13 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, BarChart2, Dumbbell, Play, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const isOnboarding = location.pathname === "/onboarding";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +27,13 @@ const Header = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
+
+  // Hide header on onboarding page
+  if (isOnboarding) {
+    return null;
+  }
+
+  const isLoggedIn = location.pathname !== "/" && location.pathname !== "/login";
 
   return (
     <header
@@ -44,28 +53,55 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-foreground/80 hover:text-foreground transition-colors">
-              Home
-            </Link>
-            <Link to="#features" className="text-foreground/80 hover:text-foreground transition-colors">
-              Features
-            </Link>
-            <Link to="#pricing" className="text-foreground/80 hover:text-foreground transition-colors">
-              Pricing
-            </Link>
-            <Link to="#about" className="text-foreground/80 hover:text-foreground transition-colors">
-              About
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link to="/dashboard" className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2">
+                  <Home size={18} />
+                  Dashboard
+                </Link>
+                <Link to="/workout-customization" className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2">
+                  <Dumbbell size={18} />
+                  Workouts
+                </Link>
+                <Link to="/progress" className="text-foreground/80 hover:text-foreground transition-colors flex items-center gap-2">
+                  <BarChart2 size={18} />
+                  Progress
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/" className="text-foreground/80 hover:text-foreground transition-colors">
+                  Home
+                </Link>
+                <Link to="#features" className="text-foreground/80 hover:text-foreground transition-colors">
+                  Features
+                </Link>
+                <Link to="#pricing" className="text-foreground/80 hover:text-foreground transition-colors">
+                  Pricing
+                </Link>
+                <Link to="#about" className="text-foreground/80 hover:text-foreground transition-colors">
+                  About
+                </Link>
+              </>
+            )}
           </nav>
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button size="sm">
-              <Link to="/onboarding">Sign Up</Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button variant="outline" size="sm">
+                Log Out
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" size="sm">
+                  <Link to="/login">Login</Link>
+                </Button>
+                <Button size="sm">
+                  <Link to="/onboarding">Sign Up</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -88,48 +124,87 @@ const Header = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden bg-background border-t">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link
-              to="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
-              onClick={toggleMobileMenu}
-            >
-              Home
-            </Link>
-            <Link
-              to="#features"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
-              onClick={toggleMobileMenu}
-            >
-              Features
-            </Link>
-            <Link
-              to="#pricing"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
-              onClick={toggleMobileMenu}
-            >
-              Pricing
-            </Link>
-            <Link
-              to="#about"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
-              onClick={toggleMobileMenu}
-            >
-              About
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="flex items-center px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  <Home className="mr-2 h-5 w-5" />
+                  Dashboard
+                </Link>
+                <Link
+                  to="/workout-customization"
+                  className="flex items-center px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  <Dumbbell className="mr-2 h-5 w-5" />
+                  Workouts
+                </Link>
+                <Link
+                  to="/progress"
+                  className="flex items-center px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  <BarChart2 className="mr-2 h-5 w-5" />
+                  Progress
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  Home
+                </Link>
+                <Link
+                  to="#features"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  Features
+                </Link>
+                <Link
+                  to="#pricing"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  Pricing
+                </Link>
+                <Link
+                  to="#about"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-muted"
+                  onClick={toggleMobileMenu}
+                >
+                  About
+                </Link>
+              </>
+            )}
           </div>
           <div className="pt-4 pb-3 border-t border-muted">
             <div className="flex items-center px-5">
               <div className="flex-shrink-0">
-                <Button variant="outline" className="w-full mb-2">
-                  <Link to="/login" onClick={toggleMobileMenu}>
-                    Login
-                  </Link>
-                </Button>
-                <Button className="w-full">
-                  <Link to="/onboarding" onClick={toggleMobileMenu}>
-                    Sign Up
-                  </Link>
-                </Button>
+                {isLoggedIn ? (
+                  <Button variant="outline" className="w-full" onClick={toggleMobileMenu}>
+                    Log Out
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" className="w-full mb-2">
+                      <Link to="/login" onClick={toggleMobileMenu}>
+                        Login
+                      </Link>
+                    </Button>
+                    <Button className="w-full">
+                      <Link to="/onboarding" onClick={toggleMobileMenu}>
+                        Sign Up
+                      </Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
