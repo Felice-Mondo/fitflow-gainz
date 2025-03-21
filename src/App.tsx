@@ -24,7 +24,7 @@ const App = () => (
       <BrowserRouter>
         <Header />
         <AppSidebar />
-        <main className="pt-16 md:pl-[var(--sidebar-width)] transition-all duration-300 ease-in-out group-data-[state=collapsed]:md:pl-[var(--sidebar-width-icon)]"> 
+        <main className="pt-16 md:pl-16 transition-all duration-300 ease-in-out"> 
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/onboarding" element={<Onboarding />} />

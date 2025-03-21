@@ -1,27 +1,12 @@
 
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, 
   Dumbbell, 
   Play, 
   BarChart2,
-  ChevronLeft,
-  ChevronRight,
   LogOut
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 
 const AppSidebar = () => {
   const location = useLocation();
@@ -57,48 +42,36 @@ const AppSidebar = () => {
   ];
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
-        <Sidebar>
-          <SidebarHeader className="flex items-center justify-between">
-            <Link to="/dashboard" className="flex items-center px-2">
-              <span className="font-bold text-xl">FitTrack</span>
-            </Link>
-            <SidebarTrigger />
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={location.pathname === item.path}
-                    tooltip={item.title}
-                  >
-                    <Link to={item.path} className="flex items-center gap-2">
-                      <item.icon size={20} />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Logout">
-                  <button className="flex items-center gap-2 w-full text-left">
-                    <LogOut size={20} />
-                    <span>Logout</span>
-                  </button>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarFooter>
-        </Sidebar>
+    <nav className="fixed top-16 left-0 h-[calc(100vh-4rem)] w-16 bg-background border-r border-border flex flex-col justify-between">
+      <div className="flex flex-col items-center py-4 gap-6">
+        {menuItems.map((item) => (
+          <Link 
+            key={item.title}
+            to={item.path}
+            className={`p-2 rounded-md hover:bg-muted transition-colors relative group ${
+              location.pathname === item.path ? 'bg-muted text-primary' : 'text-muted-foreground'
+            }`}
+            title={item.title}
+          >
+            <item.icon size={20} />
+            <span className="absolute left-full ml-2 bg-background border border-border text-sm px-2 py-1 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
+              {item.title}
+            </span>
+          </Link>
+        ))}
       </div>
-    </SidebarProvider>
+      <div className="p-4">
+        <button 
+          className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-md transition-colors group relative"
+          title="Logout"
+        >
+          <LogOut size={20} />
+          <span className="absolute left-full ml-2 bg-background border border-border text-sm px-2 py-1 rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity whitespace-nowrap">
+            Logout
+          </span>
+        </button>
+      </div>
+    </nav>
   );
 };
 
